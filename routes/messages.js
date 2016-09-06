@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var jwt = require('jsonwebtoken')
 
 var Message = require('../models/message');
 
@@ -17,6 +18,20 @@ router.get('/', function(req, res, next){
                 obj: docs
             })
         })
+})
+
+// middleware
+router.use('/?', function(req, res, next){
+    jwt.verify(req.query.token, 'secret', function(err, decoded){
+        if(err){
+            return res.status(404).json({
+                title: 'Authentication Failed',
+                error: err
+            });
+        }
+        next();
+    })
+
 })
 
 router.post('/', function(req, res, next){
